@@ -1,3 +1,6 @@
+import doctest
+
+
 class GaleShapley:
     """Implementation of the Gale-Shapley algorithem
 
@@ -50,21 +53,19 @@ class GaleShapley:
         return matches
 
 
-import doctest
-
 # doctest.testmod()
 
-p1 = {
-    1: [1, 2, 3],
-    2: [2, 1, 3],
-    3: [2, 3, 1],
-}
-p2 = {
-    1: [1, 2, 3],
-    2: [2, 1, 3],
-    3: [2, 3, 1],
-}
-gs = GaleShapley()
+# p1 = {
+#     1: [1, 2, 3],
+#     2: [2, 1, 3],
+#     3: [2, 3, 1],
+# }
+# p2 = {
+#     1: [1, 2, 3],
+#     2: [2, 1, 3],
+#     3: [2, 3, 1],
+# }
+# gs = GaleShapley()
 
-m = gs.find_matches(p1, p2)
-print(m)
+# m = gs.find_matches(p1, p2)
+# print(m)

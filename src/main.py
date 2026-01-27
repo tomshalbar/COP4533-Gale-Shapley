@@ -1,6 +1,3 @@
-
-
-
 def main():
     pass
 
@@ -11,6 +8,7 @@ def parse_input():
 
 def verify_matching():
     pass
+
 
 if __name__ == "__main__":
     main()
