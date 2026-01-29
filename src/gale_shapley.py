@@ -17,11 +17,15 @@ class GaleShapley:
         >>> gs = GaleShapley()
         >>> gs.find_matches({1: [1, 2, 3], 2: [2, 1, 3], 3: [2, 3, 1]}, {1: [1, 2, 3], 2: [2, 1, 3], 3: [2, 3, 1]})
         {1: 1, 2: 2, 3: 3}
+        >>> gs.find_matches({}, {})
+        {}
+        >>> gs.find_matches({1: [1,]}, {1: [1,]})
+        {1: 1}
         """
 
         matches = {key: -1 for key in proposers_preferences.keys()}
 
-        # [NOTE] I would've used sets, but want replicability for east debugging.
+        # [NOTE] I would've used sets, but want replicability for easy debugging.
         free_proposers = list(proposers_preferences.keys())
         tested_matches = {key: 0 for key in proposers_preferences.keys()}
 
@@ -53,19 +57,5 @@ class GaleShapley:
         return matches
 
 
-# doctest.testmod()
-
-# p1 = {
-#     1: [1, 2, 3],
-#     2: [2, 1, 3],
-#     3: [2, 3, 1],
-# }
-# p2 = {
-#     1: [1, 2, 3],
-#     2: [2, 1, 3],
-#     3: [2, 3, 1],
-# }
-# gs = GaleShapley()
-
-# m = gs.find_matches(p1, p2)
-# print(m)
+if __name__ == "__main__":
+    doctest.testmod()

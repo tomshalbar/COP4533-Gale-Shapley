@@ -38,8 +38,9 @@ def test_times(n):
     gs = GaleShapley()
 
     for val in vals_to_test:
-        pref_a = generate_pref_list(val, 10)
-        pref_b = generate_pref_list(val, 11)
+        print(f"testing val {val}")
+        pref_a = generate_pref_list(val, 11)
+        pref_b = generate_pref_list(val, 12)
 
         st = time.perf_counter()
         gs.find_matches(pref_a, pref_b)
@@ -70,5 +71,5 @@ def main():
 
 if __name__ == "__main__":
     """run like this:
-    python -m tests.test_speed --number=7"""
+    python -m tests.test_speed --number="""
     main()
