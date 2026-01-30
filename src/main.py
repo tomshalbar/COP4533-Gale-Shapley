@@ -36,6 +36,26 @@ def parse_input(filename) -> list[dict[int, list[int]]] | None:
         return None
 
 
+def write_output(hospital_student_matching: dict[int, int], output_file: str) -> None:
+    """
+        Writes the resulting match from the Gale Shapley algorithm into an output file in the directory 'output_files/'
+
+        Args:
+            result -> the match returned from the algorithm
+            output_file -> the file being written to with a .out extension (e.g. example_1.in --> example_1.out)
+    """
+
+    # remove the file extension and add '.out'
+    output_dir = "output_files/"
+    output_file_path = output_dir + output_file[output_file.find('/') + 1 : output_file.find('.')] + ".out"
+
+    # We now have a file that does not exist, we can write our data to it now
+    with open(output_file_path, 'w') as file:
+        for hospital in hospital_student_matching:
+            student = hospital_student_matching[hospital]
+            file.write(f"{hospital} {student}\n")
+
+
 def verify_matching(matching: dict[int, int], hospital_preferences: dict[int, list[int]], student_preferences: dict[int, list[int]]) -> bool:
     """
         Verifies the matching of the Gale Shapley algorithm. Checks if each hospital and each student is matched to exactly one partner, with no duplicates.
@@ -111,7 +131,7 @@ if __name__ == "__main__":
     parser.add_argument("filename", type=str,
                         help="The input file (complete filepath from the home project directory). A simple example "
                              "would be "
-                             "`python src/main.py input_files/example.in`")
+                             "`python src/main.py input_files/example_1.in`")
 
     args = parser.parse_args()
     hospital_pref, student_pref = parse_input(args.filename)
@@ -119,3 +139,4 @@ if __name__ == "__main__":
     gs = GaleShapley()
     result = gs.find_matches(hospital_pref, student_pref)
     verify_matching(result, hospital_pref, student_pref)
+    write_output(result, args.filename)
