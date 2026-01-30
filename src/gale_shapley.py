@@ -12,7 +12,7 @@ class GaleShapley:
         self,
         proposers_preferences: dict[int, list[int]],
         receivers_preferences: dict[int, list[int]],
-    ) -> list[tuple[int, int]]:
+    ) -> dict[int, int]:
         """
         >>> gs = GaleShapley()
         >>> gs.find_matches({1: [1, 2, 3], 2: [2, 1, 3], 3: [2, 3, 1]}, {1: [1, 2, 3], 2: [2, 1, 3], 3: [2, 3, 1]})
@@ -21,7 +21,7 @@ class GaleShapley:
 
         matches = {key: -1 for key in proposers_preferences.keys()}
 
-        # [NOTE] I would've used sets, but want replicability for east debugging.
+        # [NOTE] I would've used sets, but want replicability for easy debugging.
         free_proposers = list(proposers_preferences.keys())
         tested_matches = {key: 0 for key in proposers_preferences.keys()}
 
