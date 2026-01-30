@@ -2,8 +2,9 @@ import argparse
 
 from gale_shapley import GaleShapley
 from collections.abc import Iterable  # Checking if a hospital is matched with multiple students
+from pathlib import Path
 
-def parse_input(filename) -> list[dict[int, list[int]]] | None:
+def parse_input(filename) -> list[dict[int, list[int]]]:
     """
         Parses the file provided by cleaning the input, storing hospital and student preferences, and sending a
         dictionary to the gale_shapley algorithm.
@@ -14,26 +15,36 @@ def parse_input(filename) -> list[dict[int, list[int]]] | None:
         Returns a list of dicts if the file was found:
             1st element --> hospital preferences [int, list[int]]
             2nd element --> student preferences [int, list[int]]
+
+            - If there is an 'Error' an empty list is returned so that the output is empty and the program does not crash
     """
+
+    if Path(filename).stat().st_size == 0:
+        print("NOTE: the inputted file is empty!")
+        return [{}, {}]
 
     try:
         with open(filename, 'r') as file:
             n = file.readline()
-
             hospital_preferences: dict[int, list[int]] = {}
+            student_preferences: dict[int, list[int]] = {}
+
             for hospital_id in range(int(n)):
                 current_hospital_preferences = [int(num) for num in file.readline().split()]
                 hospital_preferences[hospital_id+1] = current_hospital_preferences
 
-            student_preferences: dict[int, list[int]] = {}
             for student_id in range(int(n)):
                 current_student_preferences = [int(num) for num in file.readline().split()]
                 student_preferences[student_id+1] = current_student_preferences
 
+                if len(student_preferences[student_id+1]) != len(hospital_preferences[student_id+1]):
+                    print("INVALID INPUT ERROR: the number of hospitals is not equal to the number of students")
+                    return [{}, {}]
+
             return [hospital_preferences, student_preferences]
     except FileNotFoundError:
-        print(f"Error: '{filename}' was not found!")
-        return None
+        print(f"INVALID INPUT ERROR: '{filename}' was not found!")
+        return [{}, {}]
 
 
 def write_output(hospital_student_matching: dict[int, int], output_file: str) -> None:
@@ -117,6 +128,9 @@ def verify_matching(matching: dict[int, int], hospital_preferences: dict[int, li
                     if student_preferences[preferred_student][j] == hospital:
                         print(f"INVALID MATCHING: (h{hospital}, s{preferred_student}) are an unstable pair!")
                         return False
+
+    if len(matching) == 0:
+        return False
 
     # If the verifier made it this far then the matching is stable
     print("VALID STABLE")
