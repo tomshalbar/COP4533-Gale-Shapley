@@ -31,6 +31,8 @@ Group Members:
 
 ```python -m tests.test_speed --number=5```
 
+- The file is saved as `results.png`
+
 7) To run the Pytest Testing Suite:
 
 ```pytest tests/test_gale_shapley.py```
