@@ -1,4 +1,5 @@
 from src.gale_shapley import GaleShapley
+from src.main import verify_matching
 import numpy as np
 import time
 import matplotlib.pyplot as plt
@@ -11,7 +12,7 @@ def build_parser():
         "-n", "--number", required=True, help="n * 500 to test up to", type=int
     )
     parser.add_argument(
-        "-o", "--output", default="results.png", help="Path to save runtime plot"
+        "-o", "--output", default="results.png", help="Path to save runtime plot comparing gs algorithm with the verifier"
     )
     return parser
 
@@ -35,6 +36,7 @@ def test_times(n):
     n where n is 500 * n the testing will go to"""
     vals_to_test = [500 * i for i in range(n)]
     perf_times = []
+    verif_times = []
     gs = GaleShapley()
 
     for val in vals_to_test:
@@ -43,21 +45,38 @@ def test_times(n):
         pref_b = generate_pref_list(val, 12)
 
         st = time.perf_counter()
-        gs.find_matches(pref_a, pref_b)
+        res = gs.find_matches(pref_a, pref_b)
         perf_times.append(time.perf_counter() - st)
 
-    return perf_times
+        st = time.perf_counter()
+        verify_matching(res, pref_a, pref_b)
+        verif_times.append(time.perf_counter() - st)
+
+    return perf_times, verif_times
 
 
 def test_and_graph(n, path_to_save):
     xs = [500 * i for i in range(n)]
-    ys = test_times(n)
-    plt.plot(xs, ys, marker="o")
-    plt.title("Times")
+
+    times = test_times(n)
+    ys = times[0]  # For GS algorithm
+    y2s = times[1] # For verifier
+
+    plt.figure()
+
+    plt.plot(xs, ys, marker="o", label="Gale-Shapley (GS)")
+    plt.plot(xs, y2s, marker="x", label="Verifier")
+
+    plt.title("Comparing GS and Verifier Times")
+
     plt.xlabel("N")
     plt.ylabel("Run time (s)")
+
     plt.grid(True, which="both", axis="x")
+    plt.legend()
+
     plt.savefig(path_to_save)
+    plt.close()
 
 
 def main():

@@ -1,6 +1,6 @@
 import argparse
 
-from gale_shapley import GaleShapley
+from src.gale_shapley import GaleShapley
 from collections.abc import Iterable  # Checking if a hospital is matched with multiple students
 from pathlib import Path
 
@@ -65,6 +65,8 @@ def write_output(hospital_student_matching: dict[int, int], output_file: str) ->
         for hospital in hospital_student_matching:
             student = hospital_student_matching[hospital]
             file.write(f"{hospital} {student}\n")
+
+    print(f"Output was written to {output_file_path}")
 
 
 def verify_matching(matching: dict[int, int], hospital_preferences: dict[int, list[int]], student_preferences: dict[int, list[int]]) -> bool:
@@ -142,15 +144,64 @@ if __name__ == "__main__":
                                      "preferences. It creates a map based on these preferences, and "
                                      "then passes them into the Gale-Shapley algorithm.")
 
-    parser.add_argument("filename", type=str,
+    parser.add_argument("--filename", type=str,
                         help="The input file (complete filepath from the home project directory). A simple example "
                              "would be "
                              "`python src/main.py input_files/example_1.in`")
 
-    args = parser.parse_args()
-    hospital_pref, student_pref = parse_input(args.filename)
+    parser.add_argument("--v", action="store_true",
+                        help="Flag to specify the user only wants to test the verifier")
 
-    gs = GaleShapley()
-    result = gs.find_matches(hospital_pref, student_pref)
-    verify_matching(result, hospital_pref, student_pref)
-    write_output(result, args.filename)
+    args = parser.parse_args()
+    if args.v:
+        print("Enter the current hospital preferences separated by spaces (e.g. 1 2 3), or 'STOP' to enter student preferences:")
+        currentID = 1
+        hospital_preferences: dict[int, list[int]] = {}
+        user_input = ""
+        while user_input != "STOP":
+            user_input = input()
+            if user_input == "STOP":
+                break
+            try:
+                hospital_preferences[currentID] = [int(num) for num in user_input.split()]
+                currentID += 1
+            except ValueError:
+                print("Input was invalid, try again. Enter the current hospital preferences separated by spaces (e.g. 1 2 3), or 'STOP' to enter student preferences:")
+
+        print("Enter the current student preferences separated by spaces (e.g. 1 2 3), or 'STOP' to enter final matching:")
+        currentID = 1
+        student_preferences: dict[int, list[int]] = {}
+        user_input = ""
+        while user_input != "STOP":
+            user_input = input()
+            if user_input == "STOP":
+                break
+            try:
+                student_preferences[currentID] = [int(num) for num in user_input.split()]
+                currentID += 1
+            except ValueError:
+                print(
+                    "Input was invalid, try again. Enter the current student preferences separated by spaces (e.g. 1 2 3), or 'STOP' to enter final matching:")
+
+        print("Enter the current matching (e.g. 1 2), or 'STOP' to start the verifier:")
+        matching: dict[int, int] = {}
+        user_input = ""
+        while user_input != "STOP":
+            user_input = input()
+            if user_input == "STOP":
+                break
+            try:
+                pair = [int(num) for num in user_input.split()]
+                matching[pair[0]] = pair[1]
+            except ValueError:
+                print(
+                    "Input was invalid, try again. Enter the current matching (e.g. 1 2), or 'STOP' to start the verifier:")
+
+        verify_matching(matching, hospital_preferences, student_preferences)
+    else:
+        hospital_pref, student_pref = parse_input(args.filename)
+
+        gs = GaleShapley()
+        result = gs.find_matches(hospital_pref, student_pref)
+        verify_matching(result, hospital_pref, student_pref)
+        write_output(result, args.filename)
